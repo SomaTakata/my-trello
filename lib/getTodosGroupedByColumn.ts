@@ -9,7 +9,7 @@ const todos = data.documents;
 
 //情報を整理
 const columns=todos.reduce((acc,todo)=>{
-if(!acc.get(todo.status)){
+    if(!acc.get(todo.status)){
     acc.set(todo.status,{
         id:todo.status,
         todos:[]
@@ -17,14 +17,15 @@ if(!acc.get(todo.status)){
 }
 
 acc.get(todo.status)!.todos.push({
-$id:todo.$id,
-$createdAt:todo.$createdAt,
+    $id:todo.$id,
+    $createdAt:todo.$createdAt,
 title:todo.title,
 status:todo.status,
 ...(todo.image&&{image:JSON.parse(todo.image)})
 });
 return acc;
 },new Map<TypedColumn,Column>())
+
 // columnTypesが作成されていないときにからの者を入れる
 const columnTypes:TypedColumn[]=["todo","inprogress","done"]
 
@@ -32,20 +33,22 @@ for(const columnType of columnTypes){
     if(!columns.get(columnType)){
         columns.set(columnType,{
             id:columnType,
-            todos:[]
+            todos:[],
         }
-        )
+        );
     }
-    // ソート
+    }
+    console.log(columns)    // ソート
     const sortedColumns=new Map(
-
+        
         Array.from(columns.entries()).sort(
             (a,b)=>columnTypes.indexOf(a[0])-columnTypes.indexOf(b[0]))
             )
             const board:Board={
-            columns:sortedColumns    
+                columns:sortedColumns    
             }
             return board
-}
-};
-
+        }
+    
+    
+    
