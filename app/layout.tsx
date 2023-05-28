@@ -12,7 +12,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-[#F5F6F8]">{children}</body>
+      <body className="bg-[#F5F6F8]" suppressHydrationWarning={true}>
+        {children}
+      </body>
     </html>
   );
 }
