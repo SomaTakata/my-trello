@@ -1,9 +1,31 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import Avatar from "react-avatar";
+import { useBoardStore } from "@/store/BoradStore";
+import fetchSuggestion from "@/lib/fetchSuggestion";
 function Header() {
+  const [board, searchString, setSearchString] = useBoardStore((state) => [
+    state.board,
+    state.searchString,
+    state.setSearchString,
+  ]);
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [suggestion, setSuggestion] = useState<string>("");
+
+  useEffect(() => {
+    if (board.columns.size === 0) return;
+    setLoading(true);
+    const fetchSuggestionFunc = async () => {
+      const suggestion = await fetchSuggestion(board);
+      setSuggestion(suggestion);
+      setLoading(false);
+    };
+    fetchSuggestionFunc();
+  }, [board]);
+
   return (
     <header
       className="
@@ -17,6 +39,7 @@ function Header() {
           alt="Trello Logo"
           width={300}
           height={100}
+          priority={false}
           className="w-40 md:w-54 pb-10 md:pb-0 object-contain"
         />
         <div className="flex items-center space-x-5 flex-1 justify-end w-full">
@@ -26,6 +49,8 @@ function Header() {
             <input
               type="text"
               placeholder="Search"
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
               className="flex-1 outline-none p-2"
             />
             <button hidden type="submit">
@@ -44,8 +69,14 @@ function Header() {
       </div>
       <div className=" py-2 flex items-center justify-center px-5 md:py-5">
         <p className="flex items-center p-5 text-sm font-light pr-5 shadow-xl rounded-xl bg-white italic max-w-3xl text-[#0055D1]">
-          <UserCircleIcon className="inline-block h-10 w-10 text-[#0055D1] mr-1 " />
-          GPT is summarising your tasks for the day ...
+          <UserCircleIcon
+            className={`inline-block h-10 w-10 text-[#0055D1] mr-1 ${
+              loading && "animate-spin"
+            }`}
+          />
+          {suggestion && !loading
+            ? suggestion
+            : "GPT is summarizing your tasks for the day.. "}
         </p>
       </div>
     </header>
